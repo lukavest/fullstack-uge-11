@@ -1,3 +1,45 @@
 body {
     margin: 0;
-} 
+    max-width: 390px;
+}
+
+header {
+    position: relative;
+}
+
+.banner {
+    display: block;
+    width: 100%;
+}
+
+nav {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+
+nav ul {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 10px;
+}
+
+.icon {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.profile-pic{
+    width: 50px;
+    height: 50px;
+    background-color: green;
+    position: absolute;
+    top: 50px;
+    left: 100px;
+    border-radius: 50%;
+}
