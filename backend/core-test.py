@@ -6,25 +6,29 @@ def display_cart(user: User):
         return    
     print(f"{user.name}'s Cart:")
     for item in user.cart.items:
-        print(f" - Store {item.store_id}, Item {item.item_id}, Quantity {item.quantity}")
-    print(f"Total: ${user.cart.total:.2f}")
+        menu_item = user.store_visiting.get_item_by_id(item.item_id)
+        print(f"{item.quantity}x {menu_item}")
+    print(f"Total: ${user.cart.total:.2f}\n")
 
 def main():
     # Create a restaurant with a menu and an order
     r = Store(store_id=1, name="Testaurant")
-    AddMenuItem(r,MenuItem(item_id=1, name="Burger", price=9.99))
-    AddMenuItem(r,MenuItem(item_id=2, name="Fries", price=3.49))
+    r.add_menu_item(MenuItem(item_id=1, name="Burger", price=9.99))
+    r.add_menu_item(MenuItem(item_id=2, name="Fries", price=3.49))
     
     u = User(user_id=1, name="Alice")
-    VisitStore(u,r)
-    AddToCart(u, r, item_id=1, quantity=2)  # 2x Test Burger
-    AddToCart(u, r, item_id=2, quantity=1)  # 1x Test Fries
-    display_cart(u)
+    u.visit_store(r)
+    u.add_to_cart(item_id=1, quantity=2)  # 2x Test Burger
+    u.add_to_cart(item_id=2, quantity=1)  # 1x Test Fries
 
-    PlaceOrder(u,r)
     display_cart(u)
     
-    LeaveStore(u,r)
+    u.add_to_cart(2,3)
+    display_cart(u)
+    
+    u.place_order()
+    display_cart(u)
+    u.leave_store()
     display_cart(u)
 
 if __name__ == "__main__":
