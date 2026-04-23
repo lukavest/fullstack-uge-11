@@ -1,0 +1,32 @@
+## add new store
+curl --header "Content-Type: application/json" --request POST --data '{"name":"Testeraunt"}' http://localhost:8000/store
+curl --header "Content-Type: application/json" --request POST --data '{"name":"Big Bistro"}' http://localhost:8000/store
+
+## list stores
+curl http://localhost:8000/stores
+
+## add menu item to store
+curl --header "Content-Type: application/json" --request POST --data '{"store_id":"1","name":"Test Burger","price":"12.75"}' http://localhost:8000/menu
+curl --header "Content-Type: application/json" --request POST --data '{"store_id":"1","name":"Test Fries","price":"6.50"}' http://localhost:8000/menu
+
+curl --header "Content-Type: application/json" --request POST --data '{"store_id":"2","name":"Big Burger","price":"32.75"}' http://localhost:8000/menu
+curl --header "Content-Type: application/json" --request POST --data '{"store_id":"2","name":"Big Fries","price":"16.50"}' http://localhost:8000/menu
+
+## show menu of store 1
+curl http://localhost:8000/menu/1
+
+## create user
+curl --header "Content-Type: application/json" --request POST --data '{"name":"Ada"}' http://localhost:8000/users
+
+## visit store
+curl --request POST http://localhost:8000/users/1/visit-store/1
+
+## add to cart
+curl --header "Content-Type: application/json" --request POST --data '{"item_id":"1","quantity":"1"}' http://localhost:8000/users/1/cart/add-item
+curl --header "Content-Type: application/json" --request POST --data '{"item_id":"2","quantity":"3"}' http://localhost:8000/users/1/cart/add-item
+
+## show cart
+curl http://localhost:8000/users/1/cart
+
+## checkout
+curl --request POST http://localhost:8000/users/1/checkout
