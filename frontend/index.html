@@ -1,9 +1,8 @@
 <!DOCTYPE html>
-
 <html>
     <head>
-       <link rel="stylesheet" href="style.css">
-       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="style.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body>
         <header>
@@ -19,14 +18,34 @@
                 </ul>
             </nav>
         </header>
-        <main>
-            <section>
-                <div class="profile-pic">
 
+        <main>
+            <section class="profile-section">
+                <div class="profile-pic"></div>
+                <h2 class="restaurant-name">Grill Chef<br>Mediterranean Kitch</h2>
+                <div class="search-bar">
+                    <span class="search-icon">&#128269;</span>
+                    <input type="text" placeholder="Søg madvarer">
                 </div>
             </section>
+
+            <section class="menu-list" id="menu-list"></section>
+
+            <section class="order-summary" id="order-summary">
+                <h3>Your order</h3>
+                <ul id="order-items"></ul>
+                <div class="order-total">
+                    <hr>
+                    <div class="total-row">
+                        <span>Total price:</span>
+                        <span id="total-price">$0</span>
+                    </div>
+                </div>
+            </section>
+
+            <button class="complete-order-btn">Complete order</button>
         </main>
-	<script src="script.js"></script>
+
+        <script src="script.js"></script>
     </body>
 </html>
-
