@@ -16,7 +16,7 @@ curl --header "Content-Type: application/json" --request POST --data '{"store_id
 curl http://localhost:8000/menu/1
 
 ## create user
-curl --header "Content-Type: application/json" --request POST --data '{"name":"Ada"}' http://localhost:8000/users
+curl --header "Content-Type: application/json" --request POST --data '{"email":"ada@lovelace.uk","name":"Ada"}' http://localhost:8000/users
 
 ## visit store
 curl --request POST http://localhost:8000/users/1/visit-store/1
@@ -30,3 +30,12 @@ curl http://localhost:8000/users/1/cart
 
 ## checkout
 curl --request POST http://localhost:8000/users/1/checkout
+
+## show user 1
+curl http://localhost:8000/users/1
+
+
+## show all menu items
+curl http://localhost:8000/menu
+
+curl --request DELETE http://localhost:8000/menu/3

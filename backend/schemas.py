@@ -17,7 +17,6 @@ class MenuItemCreate(MenuItemBase):
 
 
 class MenuItemResponse(MenuItemBase):
-    """Schema for GET /menu responses — includes the DB-generated id."""
     item_id: int
     store_id: int
     model_config = {"from_attributes": True}
@@ -46,7 +45,7 @@ class OrderItemCreate(BaseModel):
 
 
 class OrderItemResponse(BaseModel):
-    order_item_id: int
+    order_item_id: Optional[int] = None
     item_id: int
     quantity: int
     unit_price: float
@@ -61,7 +60,6 @@ class OrderCreate(BaseModel):
 
 
 class OrderResponse(BaseModel):
-    order_id: int
     user_id: int
     store_id: int
     total: float
@@ -72,11 +70,13 @@ class OrderResponse(BaseModel):
 
 # User Schemas
 class UserCreate(BaseModel):
+    email: str
     name: str
 
 
 class UserResponse(BaseModel):
-    user_id: int
+    user_id: Optional[int] = None
+    email: str
     name: str
     model_config = {"from_attributes": True}
 
@@ -86,3 +86,8 @@ class UserDetailResponse(UserResponse):
     store_visiting_id: Optional[int] = None
     cart: Optional[OrderResponse] = None
     orders: list[OrderResponse] = []
+
+
+class DeleteResponse(BaseModel):
+    message: str = "Item deleted"
+    id: int

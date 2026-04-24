@@ -1,7 +1,6 @@
-from sqlalchemy import Column, Integer, String, Float, Boolean, ForeignKey, Enum
-from sqlalchemy.orm import relationship
-from database import Base
+from dataclasses import dataclass, field
 from typing import Optional
+from copy import deepcopy
 import enum
 
 # Enum for order status
@@ -14,70 +13,43 @@ class OrderStatus(str, enum.Enum):
     DELIVERED = "delivered"
 
 
-class MenuItem(Base):
-    """Unified MenuItem model with validation logic."""
-    __tablename__ = "menu_items"
-    
-    item_id = Column(Integer, primary_key=True)
-    store_id = Column(Integer, ForeignKey("stores.store_id"), nullable=False)
-    name = Column(String, nullable=False)
-    price = Column(Float, nullable=False)
-    description = Column(String, default="")
-    category = Column(String, default="")
-    available = Column(Boolean, default=True)
-    
-    # Relationships
-    store = relationship("Store", back_populates="menu_items")
-    order_items = relationship("OrderItem", back_populates="menu_item")
+@dataclass
+class MenuItem:
+    item_id:        int
+    store_id:       int
+    name:           str
+    price:          float
+    description:    Optional[str] = None
+    category:       Optional[str] = None
+    available:      bool = True
     
     def __str__(self):
         return f"{self.item_id:02d} {self.name:<15} ${self.price:<5} {'not' if not self.available else ''} available"
-    
-    def validate_price(self):
-        """Validate that price is positive."""
-        if self.price <= 0.0:
-            raise ValueError("Price must be positive and non-zero")
 
+# @dataclass
+# class Menu:
+#     store_id: int     # mirrors store id
+#     items: list[MenuItem] = field(default_factory=list)
 
-class OrderItem(Base):
-    """Order line item linking orders to menu items."""
-    __tablename__ = "order_items"
+@dataclass
+class OrderItem:
+    item_id:        int
+    quantity:       int
+    unit_price:     float
+    price:          float
+    order_item_id:  Optional[int] = None
+    order_id:       Optional[int] = None
     
-    order_item_id = Column(Integer, primary_key=True)
-    order_id = Column(Integer, ForeignKey("orders.order_id"), nullable=False)
-    item_id = Column(Integer, ForeignKey("menu_items.item_id"), nullable=False)
-    quantity = Column(Integer, nullable=False)
-    unit_price = Column(Float, nullable=False)
-    price = Column(Float, nullable=False)
     
-    # Relationships
-    order = relationship("Order", back_populates="items")
-    menu_item = relationship("MenuItem", back_populates="order_items")
-    
-    def __str__(self):
-        return f"OrderItem(item_id={self.item_id}, qty={self.quantity}, unit_price=${self.unit_price}, total=${self.price})"
-
-
-class Order(Base):
-    """Unified Order model with validation logic."""
-    __tablename__ = "orders"
-    
-    order_id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey("users.user_id"), nullable=False)
-    store_id = Column(Integer, ForeignKey("stores.store_id"), nullable=False)
-    total = Column(Float, default=0.0)
-    status = Column(Enum(OrderStatus), default=OrderStatus.IN_CART)
-    
-    # Relationships
-    user = relationship("User", back_populates="orders", foreign_keys=[user_id])
-    store = relationship("Store", back_populates="orders", foreign_keys=[store_id])
-    items = relationship("OrderItem", back_populates="order", cascade="all, delete-orphan")
-    
-    def __str__(self):
-        return f"Order(id={self.order_id}, user={self.user_id}, store={self.store_id}, total=${self.total}, status={self.status})"
+@dataclass
+class Order:
+    user_id:        int
+    store_id:       int
+    items:          list[OrderItem] = field(default_factory=list)
+    total:          float = 0.0
+    status:         OrderStatus = OrderStatus.IN_CART  # pending | confirmed | preparing | ready | delivered
     
     def validate_order(self, store: "Store"):
-        """Validate order against store's current menu."""
         total = 0.0
         for item in self.items:
             menu_item = store.get_item_by_id(item.item_id)
@@ -91,140 +63,109 @@ class Order(Base):
             raise ValueError(f"Order total mismatch: {self.total} in order vs. {total} upon validation")
 
 
-class Store(Base):
-    """Unified Store model with menu management and validation."""
-    __tablename__ = "stores"
-    
-    store_id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
-    
-    # Relationships
-    menu_items = relationship("MenuItem", back_populates="store", cascade="all, delete-orphan")
-    orders = relationship("Order", back_populates="store", cascade="all, delete-orphan")
-    
+
+@dataclass
+class Store:
+    store_id:       int
+    name:           str
+    menu_items:     list[MenuItem] = field(default_factory=list)
+    orders:         list[Order] = field(default_factory=list)
+        
     def __str__(self):
-        return f"Store(id={self.store_id}, name='{self.name}', items={len(self.menu_items)}, orders={len(self.orders)})"
+        return f"Store(id={self.store_id}, name='{self.name}', menu_items_count={len(self.menu_items)}, orders_count={len(self.orders)})"
     
     def get_item_by_id(self, item_id: int) -> Optional[MenuItem]:
-        """Get menu item by ID."""
+        """Get a menu item by ID."""
         for item in self.menu_items:
             if item.item_id == item_id:
                 return item
         return None
-    
-    def add_menu_item(self, menu_item: MenuItem):
-        """Add a menu item to the store's menu."""
-        menu_item.validate_price()
         
-        if self.get_item_by_id(menu_item.item_id):
-            raise ValueError(f"MenuItem with item_id {menu_item.item_id} already exists in menu")
+
+@dataclass
+class User:
+    email:          str
+    name:           str
+    user_id:        Optional[int] = None
+    
+    store_visiting_id: Optional[int] = None
+    cart_id: Optional[int] = None
+    
+    store_visiting: Optional[Store] = None
+    cart:           Optional[Order] = None
+    orders:         list[Order] = field(default_factory=list)
         
-        self.menu_items.append(menu_item)
-    
-    def remove_menu_item(self, item_id: int):
-        """Remove a menu item from the store's menu."""
-        for item in self.menu_items:
-            if item.item_id == item_id:
-                self.menu_items.remove(item)
-                return
-        raise ValueError(f"MenuItem with item_id {item_id} not found, could not remove from menu")
-    
-    # def validate_order(self, order: Order):
-    #     """Validate an order against current menu."""
-    #     order.validate_order(self)
-
-
-class User(Base):
-    """Unified User model with cart and order management."""
-    __tablename__ = "users"
-    
-    user_id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
-    store_visiting_id = Column(Integer, ForeignKey("stores.store_id"), nullable=True)
-    cart_id = Column(Integer, ForeignKey("orders.order_id"), nullable=True)
-    
-    # Relationships
-    store_visiting = relationship("Store", foreign_keys=[store_visiting_id])
-    cart = relationship("Order", foreign_keys=[cart_id], uselist=False)
-    orders = relationship("Order", back_populates="user", foreign_keys="Order.user_id")
-    
     def __str__(self):
-        return f"User(id={self.user_id}, name='{self.name}', cart={self.cart_id}, orders={len(self.orders)})"
+        return f"User(id={self.user_id}, name='{self.name}', cart={self.cart}, orders_count={len(self.orders)})"
     
-    def visit_store(self, store: Store, session):
-        """User visits a store and creates a new cart."""
+    def visit_store(self, store: Store, new_cart: Order) -> None:
+        """User visits a store with an initialized cart."""
         if self.store_visiting is not None:
             raise ValueError("Cannot visit a new store before leaving the current store")
         
         self.store_visiting = store
-        new_cart = Order(user_id=self.user_id, store_id=store.store_id, status=OrderStatus.IN_CART)
-        session.add(new_cart)
-        session.flush()  # Flush to get order_id
+        self.store_visiting_id = store.store_id
         self.cart = new_cart
-    
-    def leave_store(self):
-        """User leaves the current store."""
+        self.cart_id = new_cart.order_id if hasattr(new_cart, 'order_id') else None
+        
+    def leave_store(self) -> None:
+        """User leaves current store."""
         self.store_visiting = None
+        self.store_visiting_id = None
         self.cart = None
-    
-    def add_to_cart(self, item_id: int, quantity: int = 1, session=None):
-        """Add an item to the user's cart."""
+        self.cart_id = None
+        
+    def add_to_cart(self, item_id: int, quantity: int, menu_item: MenuItem) -> None:
+        """Add an item to cart. Uses pre-fetched menu_item to avoid DB calls."""
         if self.store_visiting is None:
-            raise ValueError("User must be visiting Store to add to cart")
+            raise ValueError("User must be visiting a store to add to cart")
+        if quantity < 1:
+            raise ValueError("Quantity must be positive and non-zero")
+        if not menu_item.available:
+            raise ValueError(f"MenuItem {menu_item.name} is currently unavailable")
+        
+        price = menu_item.price * quantity
+        self.cart.total += price
+        
+        # merge quantities if this MenuItem is already in cart 
+        for item in self.cart.items:
+            if item.item_id == item_id:
+                item.quantity += quantity
+                item.price += price
+                return
+        
+        # otherwise add new item to cart
+        # Note: order_item_id and order_id will be set by the database
+        self.cart.items.append(OrderItem(
+            item_id=item_id,
+            quantity=quantity,
+            unit_price=menu_item.price,
+            price=price
+        ))
+        
+    def remove_from_cart(self, item_id: int, quantity: int = 1) -> None:
+        """Remove items from cart."""
+        if self.cart is None:
+            raise ValueError("No active cart")
         if quantity < 1:
             raise ValueError("Quantity must be positive and non-zero")
         
-        menu_item = self.store_visiting.get_item_by_id(item_id)
-        if menu_item is None:
-            raise ValueError(f"MenuItem with item_id {item_id} not found in store")
-        if not menu_item.available:
-            raise ValueError(f"MenuItem with item_id {item_id} is not available")
+        for item in self.cart.items:
+            if item.item_id == item_id:
+                
+                if item.quantity < quantity:
+                    raise ValueError(f"Cannot remove {quantity} items; only {item.quantity} in cart")
+                
+                if item.quantity == quantity:
+                    self.cart.total -= item.price
+                    self.cart.items.remove(item)
+                    return
+                
+                price_delta = quantity * item.unit_price
+                item.quantity -= quantity
+                item.price -= price_delta
+                self.cart.total -= price_delta
+                return
         
-        # Check if item already in cart
-        existing_item = None
-        for order_item in self.cart.items:
-            if order_item.item_id == item_id:
-                existing_item = order_item
-                break
-        
-        if existing_item:
-            existing_item.quantity += quantity
-            existing_item.price = existing_item.unit_price * existing_item.quantity
-        else:
-            new_order_item = OrderItem(
-                order_id=self.cart.order_id,
-                item_id=item_id,
-                quantity=quantity,
-                unit_price=menu_item.price,
-                price=menu_item.price * quantity
-            )
-            self.cart.items.append(new_order_item)
-            if session:
-                session.add(new_order_item)
-        
-        self._recalculate_cart_total()
-    
-    def _recalculate_cart_total(self):
-        """Recalculate the total price of items in cart."""
-        self.cart.total = sum(item.price for item in self.cart.items)
-    
-    def checkout(self):
-        """Convert cart to a confirmed order."""
-        if self.cart is None:
-            raise ValueError("No active cart to checkout")
-        if not self.cart.items:
-            raise ValueError("Cannot checkout with empty cart")
-        
-        # Validate order before checkout
-        # self.store_visiting.validate_order(self.cart)
-        self.cart.validate_order(self.store_visiting)
-        
-        # Mark order as pending (the order already has user_id, so it's automatically in orders)
-        self.cart.status = OrderStatus.PENDING
-        completed_order = self.cart
-        
-        # Clear cart and store references
-        self.cart = None
-        self.store_visiting = None
-        
-        return completed_order
+        raise ValueError(f"MenuItem with item_id {item_id} not found in cart")
+
