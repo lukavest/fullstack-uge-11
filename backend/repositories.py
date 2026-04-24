@@ -25,7 +25,7 @@ class StoreRepository:
     
     def delete(self, item_id: int):
         db_store = self.db.query(models.StoreModel).filter(
-            models.StoreModel.store_id == item_id
+            models.StoreModel.store_id == store_id
         ).first()
         
         if db_store:

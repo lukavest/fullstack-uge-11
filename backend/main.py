@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
+from starlette.middleware.cors import CORSMiddleware
 import uvicorn
 import schemas
 from database import engine, get_db, Base
@@ -8,6 +9,15 @@ import services
 
 app = FastAPI(
     title="Food Ordering API"
+)
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000", "http://localhost:8000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 @app.on_event("startup")
