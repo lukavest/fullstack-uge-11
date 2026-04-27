@@ -5,6 +5,7 @@ from typing import Optional
 class MenuItemBase(BaseModel):
     """Fields shared between create and read."""
     name: str
+    emoji: Optional[str] = None
     description: Optional[str] = None
     price: float = Field(..., gt=0, description="Price must be greater than 0")
     category: Optional[str] = None

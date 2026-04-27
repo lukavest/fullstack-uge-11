@@ -14,7 +14,12 @@ app = FastAPI(
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:8000"],
+    allow_origins=[
+        "http://localhost:3000",      # Local development
+        "http://localhost:8000",      # Local backend docs
+        "http://frontend:3000",       # Docker container name
+        "http://127.0.0.1:3000",      # Localhost IP
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -213,6 +218,16 @@ def get_user_orders(user_id: int, user_service: services.UserService = Depends(g
         return user_service.get_user_orders(user_id)
     except ValueError:
         raise HTTPException(status_code=404, detail="User not found")
+
+# this wil delete ALL user orders
+@app.delete("/users/{user_id}/orders", response_model=schemas.DeleteResponse, tags=["orders"])
+def clear_user_orders(user_id: int, user_service: services.UserService = Depends(get_user_service)):
+    try:
+        user_service.clear_user_orders(user_id)
+        return schemas.DeleteResponse(id=user_id)
+    except ValueError:
+        raise HTTPException(status_code=404, detail="User not found")
+
 
 
 if __name__ == "__main__":

@@ -56,6 +56,7 @@ class StoreRepository:
                 store_id=item.store_id,
                 name=item.name,
                 price=item.price,
+                emoji=item.emoji,
                 description=item.description,
                 category=item.category,
                 available=item.available
@@ -75,13 +76,14 @@ class MenuItemRepository:
     def __init__(self, db: Session):
         self.db = db
     
-    def create(self, store_id: int, name: str, price: float, 
+    def create(self, store_id: int, name: str, price: float, emoji: str = "",
                description: str = "", category: str = "", available: bool = True) -> core.MenuItem:
         """Create a new menu item."""
         db_item = models.MenuItemModel(
             store_id=store_id,
             name=name,
             price=price,
+            emoji=emoji,
             description=description,
             category=category,
             available=available
@@ -137,6 +139,7 @@ class MenuItemRepository:
             store_id=db_item.store_id,
             name=db_item.name,
             price=db_item.price,
+            emoji=db_item.emoji,
             description=db_item.description,
             category=db_item.category,
             available=db_item.available
@@ -186,6 +189,16 @@ class UserRepository:
             self.db.refresh(db_user)
         return self._to_core_user(db_user) if db_user else None
     
+    def update_orders(self, user_id: int):
+        db_user = self.db.query(models.UserModel).filter(
+            models.UserModel.user_id == user_id
+        ).first()
+        if db_user:
+            db_user.store_visiting_id = store_id
+            self.db.commit()
+            self.db.refresh(db_user)
+        return self._to_core_user(db_user) if db_user else None
+    
     def clear_cart(self, user_id: int) -> None:
         """Clear the user's cart by setting cart_id to None."""
         db_user = self.db.query(models.UserModel).filter(
@@ -194,7 +207,15 @@ class UserRepository:
         if db_user:
             db_user.cart_id = None
             self.db.commit()
-    
+            
+    def clear_user_orders(self, user_id: int) -> None:
+        print("clearning orders for ", user_id)
+        db_orders = self.db.query(models.OrderModel).filter(models.OrderModel.user_id == user_id).all()
+        for order in db_orders:
+            print(order.order_id)
+            self.db.delete(order)
+        self.db.commit()
+
     def _to_core_user(self, db_user: models.UserModel) -> core.User:
         """Convert SQLAlchemy UserModel to core.User."""
         if not db_user:

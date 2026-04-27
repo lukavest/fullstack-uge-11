@@ -306,3 +306,6 @@ class UserService:
             raise ValueError(f"User with id {user_id} not found")
         
         return user.orders
+
+    def clear_user_orders(self, user_id: int) -> None:
+        self.user_repo.clear_user_orders(user_id)

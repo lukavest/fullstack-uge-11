@@ -1,6 +1,7 @@
+import { API_BASE_URL } from './config.js';
+
 async function api_call(trail, method, body) {
-    const url = "http://localhost:8000"
-    const req_url = url + trail;
+    const req_url = API_BASE_URL + trail;
     console.log(`${req_url} ${method} ${body}`)
 
     try {

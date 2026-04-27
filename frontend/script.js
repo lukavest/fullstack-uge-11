@@ -30,7 +30,7 @@ function renderMenu(items) {
         div.className = "menu-item";
         div.id = `menu-item-${item.item_id}`;
         div.innerHTML = `
-            <div class="menu-item-emoji">${item.description}</div>
+            <div class="menu-item-emoji">${item.emoji}</div>
             <div class="menu-item-info">
                 <h4>${item.name}</h4>
                 <p class="price">$${item.price}</p>

@@ -19,6 +19,7 @@ class MenuItem:
     store_id:       int
     name:           str
     price:          float
+    emoji:          Optional[str] = None
     description:    Optional[str] = None
     category:       Optional[str] = None
     available:      bool = True

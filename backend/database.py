@@ -1,10 +1,13 @@
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 
-DATABASE_URL = "sqlite:///./food_order.db"
+# Support database URL from environment variable, default to SQLite in current directory
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./food_order.db")
+
 engine = create_engine(
     DATABASE_URL,
-    connect_args={"check_same_thread": False},  # Required for SQLite only
+    connect_args={"check_same_thread": False} if "sqlite" in DATABASE_URL else {},  # Required for SQLite only
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

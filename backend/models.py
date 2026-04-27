@@ -12,6 +12,7 @@ class MenuItemModel(Base):
     store_id = Column(Integer, ForeignKey("stores.store_id"), nullable=False)
     name = Column(String, nullable=False)
     price = Column(Float, nullable=False)
+    emoji = Column(String, default="")
     description = Column(String, default="")
     category = Column(String, default="")
     available = Column(Boolean, default=True)
