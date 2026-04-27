@@ -1,21 +1,14 @@
-// script.js
-// This is where menu items are rendered dynamically.
-// In a full-stack project, replace the `menuItems` array with a fetch() call to your backend API.
-
-// ── Example: fetch from backend (uncomment when backend is ready) ──
-// async function loadMenu() {
-//   const response = await fetch('/api/menu');
-//   const menuItems = await response.json();
-//   renderMenu(menuItems);
-// }
-
-
-
-async function getData(trail) {
+async function api_call(trail,method,body) {
     const url = "http://localhost:8000"
     const req_url = url+trail;
+    console.log(`${req_url} ${method} ${body}`)
+
     try {
-        const response = await fetch(req_url);
+        const response = await fetch(req_url, {
+            method: method,
+            body: body,
+            headers: { "Content-Type": "application/json" }
+        });
         if (!response.ok) {
         throw new Error(`Response status: ${response.status}`);
         }
@@ -27,34 +20,22 @@ async function getData(trail) {
     }
 }
 
+async function api_get(trail) {
+    return api_call(trail,"GET",null)
+}
 
-// Exactly this is returned by the api call
-// const menuItems = [
-//     {
-//     name: 'Test Burger',
-//     description: '🍔',
-//     price: 12.75,
-//     category: '',
-//     available: true,
-//     item_id: 1,
-//     store_id: 1
-//   },
-//   {
-//     name: 'Test Fries',
-//     description: '🍟',
-//     price: 6.5,
-//     category: '',
-//     available: true,
-//     item_id: 2,
-//     store_id: 1
-//   }
-//     ];
+async function api_post(trail,method,body) {
+    if (body != null) {body = JSON.stringify(body)}
+    return api_call(trail,method,body)
+}
 
 const store_id = 1;
-const menuItems = await getData(`/menu/${store_id}`);
-// log confirms fetch works
-console.log('menuItems:', menuItems);
+const user_id = 1;
+const menuItems = await api_get(`/menu/${store_id}`);
 const quantities = {};
+
+// should do this call when choosing store from list
+await api_call(`/users/${user_id}/visit-store/${store_id}`, "POST", null)
 
 function renderMenu(items) {
     const list = document.getElementById("menu-list");
@@ -84,15 +65,6 @@ function renderMenu(items) {
     });
 }
 
-function changeQty(id, delta) {
-    if (quantities[id] === undefined) {
-        quantities[id] = 0;
-    }
-    quantities[id] = Math.max(0, quantities[id] + delta);
-    document.getElementById(`qty-${id}`).textContent = quantities[id];
-    renderOrderSummary();
-}
-
 function renderOrderSummary() {
     const orderList = document.getElementById("order-items");
     const totalEl = document.getElementById("total-price");
@@ -118,12 +90,67 @@ function renderOrderSummary() {
     totalEl.textContent = `$${total}`;
 }
 
+function changeQty(id, delta) {
+    console.log(`ChangeQty ${id} ${delta}`)
+    if (quantities[id] === undefined) {
+        quantities[id] = 0;
+    }
+    quantities[id] = Math.max(0, quantities[id] + delta);
+    document.getElementById(`qty-${id}`).textContent = quantities[id];
+    renderOrderSummary();
+}
+
+
 function removeItem(id) {
     quantities[id] = 0;
     document.getElementById(`qty-${id}`).textContent = 0;
     renderOrderSummary();
 }
 
+async function addAllCart(orderItems) {
+    for (const item of orderItems) {
+        await api_post(`/users/${user_id}/cart/add-item`, "POST", item);
+    }
+}
+
+async function checkout() {
+    // Build order items from quantities
+    const orderItems = menuItems
+        .filter(item => quantities[item.item_id] > 0)
+        .map(item => ({
+            item_id: item.item_id,
+            quantity: quantities[item.item_id]
+        }));
+
+    if (orderItems.length === 0) {
+        alert("Your cart is empty!");
+        return;
+    }
+
+    await addAllCart(orderItems)
+
+    // const checkoutData = {
+    //     items: orderItems
+    // };
+
+    try {
+        const response = await api_call(`/users/${user_id}/checkout`, "POST", null);
+        console.log("Checkout successful:", response);
+        alert("Order placed successfully!");
+        // Reset quantities after successful checkout
+        Object.keys(quantities).forEach(key => quantities[key] = 0);
+        renderOrderSummary();
+        renderMenu(menuItems);
+    } catch (error) {
+        console.error("Checkout failed:", error);
+        alert("Checkout failed. Please try again.");
+    }
+}
 
 renderMenu(menuItems);
 renderOrderSummary();
+
+// Expose functions to global scope for inline onclick handlers
+window.changeQty = changeQty;
+window.removeItem = removeItem;
+window.checkout = checkout;

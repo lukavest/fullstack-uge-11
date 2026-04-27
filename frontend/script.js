@@ -90,3 +90,6 @@ function removeItem(id) {
 
 renderMenu(menuItems);
 renderOrderSummary();
+// Expose functions to global scope for inline onclick handlers
+window.changeQty = changeQty;
+window.removeItem = removeItem;
