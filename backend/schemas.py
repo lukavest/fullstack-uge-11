@@ -43,7 +43,9 @@ class OrderItemCreate(BaseModel):
     item_id: int
     quantity: int = Field(..., gt=0, description="Quantity must be greater than 0")
 
-
+class OrderItemRemove(OrderItemCreate):
+    pass
+    
 class OrderItemResponse(BaseModel):
     order_item_id: Optional[int] = None
     item_id: int

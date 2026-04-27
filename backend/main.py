@@ -176,6 +176,14 @@ def add_to_cart(user_id: int, item: schemas.OrderItemCreate, cart_service: servi
         return cart_service.add_to_cart(user_id, item.item_id, item.quantity)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+    
+@app.delete("/users/{user_id}/cart/rem-item", response_model=schemas.UserDetailResponse, tags=["cart"])
+def remove_from_cart(user_id: int, item: schemas.OrderItemRemove, cart_service: services.CartService = Depends(get_cart_service)):
+    """Add an item to user's cart."""
+    try:
+        return cart_service.remove_from_cart(user_id, item.item_id, item.quantity)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 @app.get("/users/{user_id}/cart", response_model=schemas.OrderResponse, tags=["cart"])
