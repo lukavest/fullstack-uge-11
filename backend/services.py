@@ -308,4 +308,5 @@ class UserService:
         return user.orders
 
     def clear_user_orders(self, user_id: int) -> None:
+        """Clear orders by user_id."""
         self.user_repo.clear_user_orders(user_id)

@@ -63,6 +63,7 @@ def create_store(item: schemas.StoreCreate, store_service: services.StoreService
 
 @app.delete("/store/{store_id}", response_model=schemas.DeleteResponse, tags=["stores"])
 def delete_store(store_id: int, store_service: services.StoreService = Depends(get_store_service)):
+    """Delete a store."""
     try:
         store_service.delete_store(store_id)
         return schemas.DeleteResponse(id=store_id)
@@ -139,6 +140,7 @@ def create_user(user_create: schemas.UserCreate, user_service: services.UserServ
 
 @app.delete("/users/{user_id}", response_model=schemas.DeleteResponse, tags=["users"])
 def delete_user(user_id: int, user_service: services.UserService = Depends(get_user_service)):
+    """Delete a user."""
     try:
         user_service.delete_user(user_id)
         return schemas.DeleteResponse(id=user_id)
@@ -219,9 +221,11 @@ def get_user_orders(user_id: int, user_service: services.UserService = Depends(g
     except ValueError:
         raise HTTPException(status_code=404, detail="User not found")
 
-# this wil delete ALL user orders
+
 @app.delete("/users/{user_id}/orders", response_model=schemas.DeleteResponse, tags=["orders"])
 def clear_user_orders(user_id: int, user_service: services.UserService = Depends(get_user_service)):
+    """ Delete all orders under a specific user_id. 
+    mainly used to clear database after testing ordering as pending orders are unhandled"""
     try:
         user_service.clear_user_orders(user_id)
         return schemas.DeleteResponse(id=user_id)

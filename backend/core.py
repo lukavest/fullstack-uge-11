@@ -27,11 +27,6 @@ class MenuItem:
     def __str__(self):
         return f"{self.item_id:02d} {self.name:<15} ${self.price:<5} {'not' if not self.available else ''} available"
 
-# @dataclass
-# class Menu:
-#     store_id: int     # mirrors store id
-#     items: list[MenuItem] = field(default_factory=list)
-
 @dataclass
 class OrderItem:
     item_id:        int
@@ -62,8 +57,7 @@ class Order:
         
         if total != self.total:
             raise ValueError(f"Order total mismatch: {self.total} in order vs. {total} upon validation")
-
-
+        
 
 @dataclass
 class Store:
