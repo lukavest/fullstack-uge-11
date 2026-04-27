@@ -6,11 +6,11 @@ curl --header "Content-Type: application/json" --request POST --data '{"name":"B
 curl http://localhost:8000/stores
 
 ## add menu item to store
-curl --header "Content-Type: application/json" --request POST --data '{"store_id":"1","name":"Test Burger","price":"12.75"}' http://localhost:8000/menu
-curl --header "Content-Type: application/json" --request POST --data '{"store_id":"1","name":"Test Fries","price":"6.50"}' http://localhost:8000/menu
+curl --header "Content-Type: application/json" --request POST --data '{"store_id":"1","name":"Test Burger","price":"12.75","description":"🍔"}' http://localhost:8000/menu
+curl --header "Content-Type: application/json" --request POST --data '{"store_id":"1","name":"Test Fries","price":"6.50","description":"🍟"}' http://localhost:8000/menu
 
-curl --header "Content-Type: application/json" --request POST --data '{"store_id":"2","name":"Big Burger","price":"32.75"}' http://localhost:8000/menu
-curl --header "Content-Type: application/json" --request POST --data '{"store_id":"2","name":"Big Fries","price":"16.50"}' http://localhost:8000/menu
+curl --header "Content-Type: application/json" --request POST --data '{"store_id":"2","name":"Big Burger","price":"32.75","description":"🍔"}' http://localhost:8000/menu
+curl --header "Content-Type: application/json" --request POST --data '{"store_id":"2","name":"Big Fries","price":"16.50","description":"🍟"}' http://localhost:8000/menu
 
 ## show menu of store 1
 curl http://localhost:8000/menu/1
@@ -24,6 +24,9 @@ curl --request POST http://localhost:8000/users/1/visit-store/1
 ## add to cart
 curl --header "Content-Type: application/json" --request POST --data '{"item_id":"1","quantity":"1"}' http://localhost:8000/users/1/cart/add-item
 curl --header "Content-Type: application/json" --request POST --data '{"item_id":"2","quantity":"3"}' http://localhost:8000/users/1/cart/add-item
+
+## remove from cart
+curl --header "Content-Type: application/json" --request DELETE --data '{"item_id":"1","quantity":"1"}' http://localhost:8000/users/1/cart/rem-item
 
 ## show cart
 curl http://localhost:8000/users/1/cart
@@ -39,3 +42,8 @@ curl http://localhost:8000/users/1
 curl http://localhost:8000/menu
 
 curl --request DELETE http://localhost:8000/menu/3
+
+
+## add menu item to store
+curl --header "Content-Type: application/json" --request POST --data '{"store_id":"1","name":"Test Burger","price":"12.75", "description":"🍔"}' http://localhost:8000/menu
+curl --header "Content-Type: application/json" --request POST --data '{"store_id":"1","name":"Test Fries","price":"6.50","description":"🍟"}' http://localhost:8000/menu

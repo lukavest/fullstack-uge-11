@@ -1,40 +1,24 @@
-async function api_call(trail,method,body) {
-    const url = "http://localhost:8000"
-    const req_url = url+trail;
-    console.log(`${req_url} ${method} ${body}`)
+import { api_call, api_get, api_post } from './api.js';
 
-    try {
-        const response = await fetch(req_url, {
-            method: method,
-            body: body,
-            headers: { "Content-Type": "application/json" }
-        });
-        if (!response.ok) {
-        throw new Error(`Response status: ${response.status}`);
-        }
-        const result = await response.json();
-        return result
-        // console.log(result);
-    } catch (error) {
-        console.error(error.message);
-    }
-}
-
-async function api_get(trail) {
-    return api_call(trail,"GET",null)
-}
-
-async function api_post(trail,method,body) {
-    if (body != null) {body = JSON.stringify(body)}
-    return api_call(trail,method,body)
-}
-
-const store_id = 1;
+const params = new URLSearchParams(window.location.search);
+const store_id = parseInt(params.get("store_id")) || 1;
 const user_id = 1;
 const menuItems = await api_get(`/menu/${store_id}`);
 const quantities = {};
 
-// should do this call when choosing store from list
+// Fetch and display store name
+async function loadStoreName() {
+    try {
+        const store = await api_get(`/stores/${store_id}`);
+        document.getElementById('restaurant-name').textContent = store.name;
+    } catch (error) {
+        console.error('Failed to load store name:', error);
+    }
+}
+
+await loadStoreName();
+
+// Call visit-store when entering the menu page
 await api_call(`/users/${user_id}/visit-store/${store_id}`, "POST", null)
 
 function renderMenu(items) {
@@ -129,10 +113,6 @@ async function checkout() {
 
     await addAllCart(orderItems)
 
-    // const checkoutData = {
-    //     items: orderItems
-    // };
-
     try {
         const response = await api_call(`/users/${user_id}/checkout`, "POST", null);
         console.log("Checkout successful:", response);
@@ -145,6 +125,9 @@ async function checkout() {
         console.error("Checkout failed:", error);
         alert("Checkout failed. Please try again.");
     }
+    window.location.href = `index.html?`
+    // window.location.href = `index.html?store_id=${store.store_id}`;
+
 }
 
 renderMenu(menuItems);

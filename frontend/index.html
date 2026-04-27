@@ -3,6 +3,12 @@
     <head>
         <link rel="stylesheet" href="style.css">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script>
+            // Redirect to store selection if no store_id is provided
+            if (!new URLSearchParams(window.location.search).has('store_id')) {
+                window.location.href = 'stores.html';
+            }
+        </script>
     </head>
     <body>
         <header>
@@ -10,7 +16,9 @@
             <nav>
                 <ul>
                     <li class="back-icon">
-                        <img src="/frontend/images/arrow.png" class="icon" alt="back-button">
+                        <a href="stores.html">
+                            <img src="/frontend/images/arrow.png" class="icon" alt="back-button">
+                        </a>
                     </li>
                     <li class="align-right">
                         <img src="/frontend/images/burger-bar.png" class="icon" alt="burger-icon">
@@ -22,7 +30,7 @@
         <main>
             <section class="profile-section">
                 <div class="profile-pic"></div>
-                <h2 class="restaurant-name">Grill Chef<br>Mediterranean Kitch</h2>
+                <h2 class="restaurant-name" id="restaurant-name">Placeholder store name</h2>
                 <div class="search-bar">
                     <span class="search-icon">&#128269;</span>
                     <input type="text" placeholder="Søg madvarer">
@@ -49,3 +57,5 @@
         <script type="module" src="script_new.js"></script>
     </body>
 </html>
+
+<!-- window.location.href = `index.html?store_id=${store.store_id}`; -->
