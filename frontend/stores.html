@@ -1,18 +1,129 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <link rel="stylesheet" href="style.css">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    </head>
-    <body>
-        <header>
-            <h1>Select a Restaurant</h1>
-        </header>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search – Food Delivery</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="search.css">
+</head>
+<body>
+<div class="app">
 
-        <main>
-            <section class="stores-list" id="stores-list"></section>
-        </main>
+  <!-- Header -->
+   <header>
+            <nav>
+                <ul>
+                    <li class="align-right">
+                        <img src="images/burger-bar.png" class="icon" alt="burger-icon">
+                    </li>
+                </ul>
+            </nav>
+    <div class="header">
+        <div class="header-title">Find your<br><span>next meal</span></div>
+        <div class="search-wrap">
+        <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input class="search-input" type="text" placeholder="Restaurant, dish or cuisine...">
+        </div>
+        <div class="filter-btn">⚙️</div>
+        </div>
+    </div>
+  </header>
 
-        <script type="module" src="stores_script.js"></script>
-    </body>
+  <div class="scroll-body">
+
+    <!-- Recent searches -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title">Recent searches</span>
+        <span class="see-all">Clear all</span>
+      </div>
+      <div class="recent-list">
+        <div class="recent-item">
+          <div class="recent-icon">♨️</div>
+          <a href="index.html?store_id=1">
+            <div class="recent-text">Grill Chef</div>
+            <div class="recent-sub">Mediterranean · 20 min</div>
+          </a>
+          <span class="recent-arrow">›</span>
+        </div>
+        <div class="recent-item">
+          <div class="recent-icon">🍽️</div>
+          <div>
+            <div class="recent-text">Big Bistro</div>
+            <div class="recent-sub">Bistro · 25 min</div>
+          </div>
+          <span class="recent-arrow">›</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Categories -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title">Categories</span>
+      </div>
+      <div class="cat-scroll">
+        <div class="cat-chip active"><span>🍽️</span> All</div>
+        <div class="cat-chip"><span>🥙</span> Mediterranean</div>
+        <div class="cat-chip"><span>🍔</span> Burgers</div>
+        <div class="cat-chip"><span>🍕</span> Pizza</div>
+        <div class="cat-chip"><span>🥗</span> Healthy</div>
+        <div class="cat-chip"><span>🍣</span> Sushi</div>
+      </div>
+    </div>
+
+    <!-- Restaurants -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title">Restaurants near you</span>
+        <span class="see-all">See all</span>
+      </div>
+      <div class="restaurant-list">
+
+        <a href="index.html?store_id=1" class="restaurant-card fade">
+          <div class="restaurant-banner grill">
+            <span>♨️</span>
+            <div class="banner-badge">POPULAR</div>
+            <div class="banner-time">⏱ 20 min</div>
+          </div>
+          <div class="restaurant-body">
+            <div  class="restaurant-name">Grill Chef</div>
+            <div class="restaurant-cuisine">Mediterranean Kitchen · Wraps · Grills</div>
+            <div class="restaurant-footer">
+              <div class="restaurant-tags">
+                <span class="tag open">Open now</span>
+                <span class="tag">Free delivery</span>
+              </div>
+              <div class="rating"><span class="star">★</span> 4.8</div>
+            </div>
+          </div>
+        </a>
+
+        <div class="restaurant-card fade">
+          <div class="restaurant-banner bistro">
+            <span>🍽️</span>
+            <div class="banner-time">⏱ 25 min</div>
+          </div>
+          <div class="restaurant-body">
+            <div class="restaurant-name">Big Bistro</div>
+            <div class="restaurant-cuisine">Bistro · Classics · Comfort food</div>
+            <div class="restaurant-footer">
+              <div class="restaurant-tags">
+                <span class="tag open">Open now</span>
+                <span class="tag">29 kr delivery</span>
+              </div>
+              <div class="rating"><span class="star">★</span> 4.5</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+<script type="module" src="stores_script.js"></script>
+</body>
 </html>
