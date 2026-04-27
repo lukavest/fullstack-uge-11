@@ -11,16 +11,25 @@
 <div class="app">
 
   <!-- Header -->
-  <div class="header">
-    <div class="header-title">Find your<br><span>next meal</span></div>
-    <div class="search-wrap">
-      <div class="search-box">
-        <span class="search-icon">🔍</span>
-        <input class="search-input" type="text" placeholder="Restaurant, dish or cuisine...">
-      </div>
-      <div class="filter-btn">⚙️</div>
+   <header>
+            <nav>
+                <ul>
+                    <li class="align-right">
+                        <img src="images/burger-bar.png" class="icon" alt="burger-icon">
+                    </li>
+                </ul>
+            </nav>
+    <div class="header">
+        <div class="header-title">Find your<br><span>next meal</span></div>
+        <div class="search-wrap">
+        <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input class="search-input" type="text" placeholder="Restaurant, dish or cuisine...">
+        </div>
+        <div class="filter-btn">⚙️</div>
+        </div>
     </div>
-  </div>
+  </header>
 
   <div class="scroll-body">
 
@@ -32,11 +41,11 @@
       </div>
       <div class="recent-list">
         <div class="recent-item">
-          <div class="recent-icon">🥙</div>
-          <div>
+          <div class="recent-icon">♨️</div>
+          <a href="index.html?store_id=1">
             <div class="recent-text">Grill Chef</div>
             <div class="recent-sub">Mediterranean · 20 min</div>
-          </div>
+          </a>
           <span class="recent-arrow">›</span>
         </div>
         <div class="recent-item">
@@ -73,14 +82,14 @@
       </div>
       <div class="restaurant-list">
 
-        <div class="restaurant-card fade">
+        <a href="index.html?store_id=1" class="restaurant-card fade">
           <div class="restaurant-banner grill">
-            <span>🥙</span>
+            <span>♨️</span>
             <div class="banner-badge">POPULAR</div>
             <div class="banner-time">⏱ 20 min</div>
           </div>
           <div class="restaurant-body">
-            <div class="restaurant-name">Grill Chef</div>
+            <div  class="restaurant-name">Grill Chef</div>
             <div class="restaurant-cuisine">Mediterranean Kitchen · Wraps · Grills</div>
             <div class="restaurant-footer">
               <div class="restaurant-tags">
@@ -90,7 +99,7 @@
               <div class="rating"><span class="star">★</span> 4.8</div>
             </div>
           </div>
-        </div>
+        </a>
 
         <div class="restaurant-card fade">
           <div class="restaurant-banner bistro">
