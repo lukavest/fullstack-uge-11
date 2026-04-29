@@ -1,6 +1,5 @@
 from dataclasses import dataclass, field
 from typing import Optional
-from copy import deepcopy
 import enum
 
 # Enum for order status
